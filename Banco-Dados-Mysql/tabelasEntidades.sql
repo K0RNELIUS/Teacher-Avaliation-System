@@ -41,7 +41,7 @@ CREATE TABLE `turma` (
     `Id_Turma` int PRIMARY KEY AUTO_INCREMENT,
     `Turma` int,
     `Periodo` VARCHAR(25),
-    `Nome_Professor` VARCHAR(100),
+    `Carga_Horaria` int,
     `Horario` VARCHAR(25),
     `Vagas_Ocupadas` int,
     `Vagas_Totais` int,
@@ -65,7 +65,7 @@ DROP TABLE IF EXISTS `avaliacao`;
 
 CREATE TABLE `avaliacao` (
     `Id_Avaliacao` int PRIMARY KEY AUTO_INCREMENT,
-    `Data` DATE,
+    `Data` TIMESTAMP, -- Data e horario em que avaliacao foi feita
     `Conteudo` VARCHAR(500),
     `fk_Estudante` int, -- Avaliacao possui um autor/estudante 
     `fk_Turma` int -- Avaliacao e sobre uma turma
@@ -77,6 +77,7 @@ DROP TABLE IF EXISTS `denuncia`;
 
 CREATE TABLE `denuncia` (
     `Id_Denuncia` int PRIMARY KEY AUTO_INCREMENT,
+    `Data` TIMESTAMP, -- Data e horario em que foi realizada a denuncia na avaliacao
     `fk_Avaliacao` int -- Denuncia em uma avaliacao
 );
 
