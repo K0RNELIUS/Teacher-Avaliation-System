@@ -3,7 +3,9 @@
 -- =================================================
 
 -- Verificando linhas inseridas em estudantes
--- SELECT * FROM estudante;
+SELECT * FROM estudante;
+-- DELETE FROM estudante WHERE Matricula = 211020998;
+-- SELECT Matricula FROM estudante WHERE 211020999 = Matricula;
 
 -- Verificando linhas inseridas em departamentos
 -- SELECT * FROM departamento;
