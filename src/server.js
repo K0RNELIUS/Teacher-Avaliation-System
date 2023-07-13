@@ -6,8 +6,8 @@ const mysql = require('mysql2');
 const connectionConfig = {
   host: 'localhost',
   user: 'root', // usuario onde se deseja criar BD no MySQL
-  password: 'Leo250262', // senha do usuario
-  database: 'leandrodb' // nome do banco de dados a ser criado ou estabelecida a conexao
+  password: '', // senha do usuario
+  database: 'databasename' // nome do banco de dados a ser criado ou estabelecida a conexao
 };
 
 
@@ -25,7 +25,7 @@ con.connect(function(err) {
     const tempCon = mysql.createConnection(tempConnectionConfig);
 
     // Usando conexao temporaria para criar novo BD com infos
-    tempCon.query('CREATE DATABASE IF NOT EXISTS leandrodb', function(err, result) { // nome do banco de dados deve ser inserido aqui tambem
+    tempCon.query('CREATE DATABASE IF NOT EXISTS databasename', function(err, result) { // nome do banco de dados deve ser inserido aqui tambem
       if (err) {
         console.error('Failed to create the database:', err);
         return;
@@ -38,7 +38,7 @@ con.connect(function(err) {
         if (err) console.error('Failed to close the temporary connection:', err);
 
         // Conecta conexao original com BD criado
-        con.changeUser({ database: 'leandrodb' }, function(err) { // nome do banco de dados deve ser inserido aqui tambem
+        con.changeUser({ database: 'databasename' }, function(err) { // nome do banco de dados deve ser inserido aqui tambem
           if (err) console.error('Failed to switch to the newly created database:', err);
           else console.log('Connected to the newly created database!');
         });
@@ -115,7 +115,7 @@ for (let i = 0; i < geraBD.length; i++) {
     else {console.log(`Tabela ou Relacao ${i + 1} foi executada com sucesso!`);}
   });
 }
-/*
+
 // Populando BD
 
 const populaBD = [
@@ -173,8 +173,7 @@ for (let i = 0; i < populaBD.length; i++) {
     else {console.log(`Populando entidade ${i + 1} foi executada com sucesso!`);}
   });
 }
-*/
-/*
+
 // Criacao das Views e Procedures
 
 const auxiliosBD = [
@@ -190,11 +189,20 @@ const auxiliosBD = [
     JOIN professor ON turma.fk_Professor = professor.Id_Professor 
     JOIN disciplina ON turma.fk_Disciplina = disciplina.Codigo_Disciplina
     ORDER BY avaliacao.Data DESC;`,
+  `CREATE PROCEDURE delete_avaliacao(IN id_avaliacao INT)
+    BEGIN
+        START TRANSACTION;
+
+        DELETE FROM denuncia WHERE denuncia.fk_Avaliacao = id_avaliacao;
+
+        DELETE FROM avaliacao WHERE avaliacao.Id_Avaliacao = id_avaliacao;
+
+        COMMIT;
+    END`,
 ];
 
 
 // Executa SQL da criacao das procedures e views
-
 
 for (let i = 0; i < auxiliosBD.length; i++) {
   con.query(auxiliosBD[i], function (err, result) {
@@ -202,94 +210,6 @@ for (let i = 0; i < auxiliosBD.length; i++) {
     else {console.log(`Colocando view ou procedure ${i + 1} que foi executada com sucesso!`);}
   });
 }
-*/
-
-/*
-// Parse JSON request bodies
-app.use(express.json());
-
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
-*/
-
-/*
-// Cadastro de estudante
-app.post('/cadastroestudante', function(req, res) {
-  console.log('entrou na rota de cadastro de estudantes');
-
-    let estudante = {matricula: req.body.matricula, 
-      email: req.body.email,
-      senha: req.body.senha,
-      nome: req.body.nome,
-      curso: req.body.curso};
-
-    let create_estudante_sql = `INSERT INTO estudante SET ?`;
-
-    con.query(create_estudante_sql, estudante, function(err, result) {
-      console.log(err);
-      console.log(result);
-      if (err) {
-        throw err;
-        // console.log('entrei no erro');
-        // res.send({errorno: err.errno});
-        // res.send('erro');
-      } else {
-        // console.log('entrei no normal');
-        // res.send({errorno: 200, rescontent: result});
-        res.send(result);
-      }
-    });
-});
-*/
-
-/*
-// Create departamento
-app.post('/criardepartamento', function(req, res) {
-  console.log('entrou na rota de criar departamento');
-
-    let departamento = {Codigo_Departamento: req.body.id, Nome_Departamento: req.body.nome};
-
-    let create_departamento_sql = `INSERT INTO departamento (Codigo_Departamento, Nome_Departamento) VALUES ?`
-
-    con.query(create_departamento_sql, departamento, function(err, result) {
-      console.log(err);
-      console.log(result);
-      if (err) {
-        throw err;
-        // console.log('entrei no erro');
-        // res.send({errorno: err.errno});
-        // res.send('erro');
-      } else {
-        // console.log('entrei no normal');
-        // res.send({errorno: 200, rescontent: result});
-        res.send(result);
-      }
-    });
-});
-*/
-
-/*
-// Create a new user
-app.post('/users', function(req, res) {
-  const user = { name: req.body.name, email: req.body.email };
-
-  con.query('INSERT INTO users SET ?', user, function(err, result) {
-    if (err) throw err;
-    console.log('User added to the database!');
-    res.send('User added successfully');
-  });
-});
-
-// Retrieve all users
-app.get('/users', function(req, res) {
-  con.query('SELECT * FROM users', function(err, result) {
-    if (err) throw err;
-    console.log('Retrieved users from the database!');
-    res.send(result);
-  });
-});
-*/
-
 
 const app = express();
 const bodyParser = require('body-parser');
