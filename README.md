@@ -7,14 +7,16 @@ https://dev.mysql.com/downloads/installer/ <br>
 
 Having done this, let's move on to what else will be required. <br>
 
-Since my system uses express and mysql2 to establish connection to database and send changes, we will need to install these dependencies.
+Since my system uses express, mysql2, ejs, body-parser to send information between layers, apply changes to interface we will need to install these dependencies.
 In this sense, I will provide a simple instalation guide using VsCode. With the project cloned or forked, open a terminal in the project and execute the following command. 
 This command will make the needed instalations. 
 
 ![Alt text](</images readme/instalacao bd.png>)
+![Alt text](</images readme/install2.png>)
+![Alt text](</images readme/install3.png>)
 
 Perfect! Now you will need to make a small change to the server.js file which is inside the src directory in the project.<br>
-To not share MySQL password, I have left the fields required blanck. So unless the following steps are met, the system will not work.<br>
+To not share MySQL password, I have left the fields required blank. So unless the following steps are met, the system will not work.<br>
 
 To establish the connection from the system to a database, the server file will need the user, password, and database name from MySQL to establish a connection if the database exists or create a new database with the provided name. To do this, change fields indicated by the box or line with the comments instructions below:
 
@@ -34,7 +36,7 @@ Note that the interface will only be available to interact if the server is runn
 
 ![Alt text](</images readme/result.png>)
 
-Following these steps, you should be able to test the system with own SQL queries in MySQL or through the interface provided. <br>
+Following these steps, you should be able to test the system with own SQL queries in MySQL or through the interface provided at http://localhost/. <br>
 If you encounter any problems in the setup or with the system, please contact me through my email (leandro.kornelius@gmail.com) for us to chat.<br>
 Thank you!
 
