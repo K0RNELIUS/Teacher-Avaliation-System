@@ -1,10 +1,7 @@
-const path = require('path');
+// const path = require('path');
 const express = require('express');
 const mysql = require('mysql2');
-
-const app = express();
-const port = 3000;
-
+  
 // Estabelece configuracao da conexao com BD
 const connectionConfig = {
   host: 'localhost',
@@ -12,6 +9,7 @@ const connectionConfig = {
   password: 'Leo250262', // senha do usuario
   database: 'leandrodb' // nome do banco de dados a ser criado ou estabelecida a conexao
 };
+
 
 // Cria conexao com infos acima
 const con = mysql.createConnection(connectionConfig);
@@ -63,18 +61,18 @@ const geraBD = [
       Adm BOOLEAN DEFAULT 0
   );`,
  `CREATE TABLE IF NOT EXISTS departamento (
-      Codigo_Departamento int PRIMARY KEY,
+      Codigo_Departamento VARCHAR(25) PRIMARY KEY,
       Nome_Departamento VARCHAR(100)
   );`,
   `CREATE TABLE IF NOT EXISTS professor (
       Id_Professor int PRIMARY KEY AUTO_INCREMENT,
       Nome VARCHAR(100),
-      fk_Departamento int  -- Professor pertence a um departamento
+      fk_Departamento VARCHAR(25)  -- Professor pertence a um departamento
   );`,
   `CREATE TABLE IF NOT EXISTS disciplina (
-      Codigo_Disciplina VARCHAR(10) PRIMARY KEY,
+      Codigo_Disciplina VARCHAR(25) PRIMARY KEY,
       Nome_Disciplina VARCHAR(100),
-      fk_Departamento int -- Disciplina pertence a um departamento
+      fk_Departamento VARCHAR(25) -- Disciplina pertence a um departamento
   );`,
   `CREATE TABLE IF NOT EXISTS turma (
       Id_Turma int PRIMARY KEY AUTO_INCREMENT,
@@ -117,7 +115,7 @@ for (let i = 0; i < geraBD.length; i++) {
     else {console.log(`Tabela ou Relacao ${i + 1} foi executada com sucesso!`);}
   });
 }
-
+/*
 // Populando BD
 
 const populaBD = [
@@ -132,9 +130,9 @@ const populaBD = [
     (211020903, 'user3@aluno.unb.br', 'teste', 'user3', 'Computacao', DEFAULT),
     (211020904, 'user4@aluno.unb.br', 'teste', 'user4', 'Curso Teste', DEFAULT);`,
   `INSERT INTO departamento (Codigo_Departamento, Nome_Departamento)
-    VALUES (548, 'DEPTO ECONOMIA - BRASILIA'), 
-    (508, 'DEPTO CIENCIAS DA COMPUTACAO - BRASILIA'),
-    (481, 'DEPTO ANTROPOLOGIA - BRASILIA');`,
+    VALUES ('548', 'DEPTO ECONOMIA - BRASILIA'), 
+    ('508', 'DEPTO CIENCIAS DA COMPUTACAO - BRASILIA'),
+    ('481', 'DEPTO ANTROPOLOGIA - BRASILIA');`,
   `INSERT INTO disciplina (Codigo_Disciplina, Nome_Disciplina, fk_Departamento)
     VALUES ('CIC0004', 'ALGORITMOS E PROGRAMACAO DE COMPUTADORES', 508), 
     ('CIC0002', 'FUNDAMENTOS TEORICOS DA COMPUTACAO', 508), 
@@ -168,7 +166,7 @@ const populaBD = [
 ];
 
 // Executa comandos estabelecidos no populaBD
-/*
+
 for (let i = 0; i < populaBD.length; i++) {
   con.query(populaBD[i], function (err, result) {
     if (err) {throw err}
@@ -176,7 +174,7 @@ for (let i = 0; i < populaBD.length; i++) {
   });
 }
 */
-
+/*
 // Criacao das Views e Procedures
 
 const auxiliosBD = [
@@ -194,9 +192,10 @@ const auxiliosBD = [
     ORDER BY avaliacao.Data DESC;`,
 ];
 
+
 // Executa SQL da criacao das procedures e views
 
-/*
+
 for (let i = 0; i < auxiliosBD.length; i++) {
   con.query(auxiliosBD[i], function (err, result) {
     if (err) {throw err}
@@ -205,12 +204,15 @@ for (let i = 0; i < auxiliosBD.length; i++) {
 }
 */
 
+/*
 // Parse JSON request bodies
 app.use(express.json());
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
+*/
 
+/*
 // Cadastro de estudante
 app.post('/cadastroestudante', function(req, res) {
   console.log('entrou na rota de cadastro de estudantes');
@@ -238,7 +240,9 @@ app.post('/cadastroestudante', function(req, res) {
       }
     });
 });
+*/
 
+/*
 // Create departamento
 app.post('/criardepartamento', function(req, res) {
   console.log('entrou na rota de criar departamento');
@@ -262,6 +266,7 @@ app.post('/criardepartamento', function(req, res) {
       }
     });
 });
+*/
 
 /*
 // Create a new user
@@ -285,12 +290,90 @@ app.get('/users', function(req, res) {
 });
 */
 
-// Fornece index.html 
-app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+
+const app = express();
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+app.set('view engine', 'ejs');
+app.use(express.static("public"));
 
 // Inicia servidor e indica porta
-app.listen(port, function() {
-  console.log(`Server listening on port ${port}`);
+app.listen(3000, function() {
+    console.log(`Server listening on port ${3000}`);
+});
+
+app.post('/', function(req,res) {
+  let id = req.body.id;
+  let nome = req.body.nome;
+
+  console.log(id, nome);
+
+  let create_sql = 'INSERT INTO departamento (Codigo_Departamento, Nome_Departamento) VALUES (?, ?)';
+  let values = [id,nome];
+
+  con.query(create_sql, values, function(err,result) {
+    if (err) throw err;
+    console.log("Departamento cadastrado");
+    res.redirect('/');
+  })
+})
+
+app.get("/", function(req,res) {
+  let read_sql = 'SELECT * FROM departamento;';
+
+  con.query(read_sql, function(err,results) {
+    if (err) throw err;
+    res.render("display.ejs", { test: results });
+  })
+})
+
+app.get("/update", function(req,res){
+  con.connect(function(error) {
+    if (error) console.log(error);
+
+    let unico_id_sql = 'SELECT * FROM departamento WHERE Codigo_Departamento =?;';
+
+    let id = req.query.id;
+
+    con.query(unico_id_sql, [id], function(error, result) {
+      if (error) console.log(error);
+
+      res.render('update', {test:result});
+    })
+  })
+})
+
+app.post("/updateData", function(req, res) {
+  let id = req.body.id;
+  let nome = req.body.nome;
+
+  console.log(nome, id);
+
+  let update_sql = 'UPDATE departamento SET Nome_Departamento=? WHERE Codigo_Departamento=?;';
+
+  con.query(update_sql, [nome, id], function(error, result) {
+    if (error) throw err;
+    res.redirect("/");
+  })
+})
+
+app.get("/delete", function(req, res) {
+  con.connect(function(err) {
+    if (err) console.log(err);
+
+    let delete_sql = 'DELETE FROM departamento WHERE Codigo_Departamento=?;';
+
+    let id = req.query.id;
+
+    con.query(delete_sql, [id], function(err, result) {
+      if (err) throw err;
+      res.redirect("/");
+    })
+  })
+})
+
+// Fornece index.html 
+app.get('/', function(req, res) {
+  res.render("display.ejs")
 });
